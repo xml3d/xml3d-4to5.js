@@ -35,13 +35,73 @@ function convert(filename) {
 
             shader2material(window.$);
 
-
+            newlightmodel(window.$)
 
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+
+function newlightmodel($) {
+    $("xml3d light").each(function() {
+        var shaderRef = $(this).attr("shader");
+        if (shaderRef) {
+            $(this).removeAttr("shader");
+        } else {
+            var styleValue = $(this).attr("style");
+            if (styleValue) {
+                var pattern = /shader\s*:\s*url\s*\(\s*(\S+)\s*\)/i;
+                var result = pattern.exec(styleValue);
+                if (result) {
+                    shaderRef = result[1];
+                    styleValue = styleValue.replace(/shader\s*:\s*url\s*\(\s*(\S+)\s*\)/, '');
+                    $(this).attr("style", styleValue);
+                }
+            }
+        }
+        if(!shaderRef) {
+            console.warn("No shader given for light:");
+            return;
+        }
+        var lightshader = $(shaderRef);
+        if(!lightshader.length) {
+            console.warn("Light shader found for light:", shaderRef);
+            return;
+        }
+
+        // Set the model of the <light> instead of script of <lightshader>
+        $(this).attr("model", lightshader.attr("script").replace("lightshader", "light"));
+        // $(this).append($("<data src='" + shaderRef +"'></data>"));
+        $(this).append(lightshader.children());
+        if (lightshader.attr("compute")) {
+            $(this).attr("compute", lightshader.attr("compute"))
+        }
+
+        if ($(this).attr("intensity")) {
+            var i = +$(this).attr("intensity");
+
+            var intensity = $(this).children("float3[name=intensity]").text();
+            if(intensity) {
+                var values = [];
+                intensity.trim().split(/\s+/).forEach(function(v) {
+                    values.push((+v)*i);
+                });
+                $(this).children("float3[name=intensity]").text(values.join(" "));
+            }
+
+            //$(this).append('<!--  TODO: Adapt intensity by ' + $(this).attr("intensity") + '-->');
+            $(this).removeAttr("intensity");
+        }
+    });
+
+    $("xml3d lightshader").remove();
+    /*$("xml3d lightshader").each(function() {
+        $(this).removeAttr("script");
+        rename_node($, this, "data");
+    })*/
 }
 
 function rename_node($, node, newName) {
