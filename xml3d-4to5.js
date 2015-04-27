@@ -35,13 +35,33 @@ function convert(filename) {
 
             shader2material(window.$);
 
-            newlightmodel(window.$)
+            newlightmodel(window.$);
+
+            perspective2Projection(window.$);
 
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+function perspective2Projection($) {
+    $("xml3d view").each(function() {
+        var perspective = $(this).attr("perspective");
+        if (perspective) {
+            $(this).removeAttr("perspective").attr("projection", perspective);
+            console.log("")
+        }
+    });
+    $("xml3d data, xml3d dataflow").each(function() {
+        var compute = $(this).attr("compute");
+        if (compute) {
+            compute = compute.replace("perspective=", "projection=");
+            compute = compute.replace("perspective =", "projection =");
+            $(this).attr("compute", compute);
+        }
+    });
 }
 
 
