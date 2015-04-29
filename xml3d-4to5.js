@@ -39,11 +39,53 @@ function convert(filename) {
 
             perspective2Projection(window.$);
 
+            textureSamplingParameters(window.$);
+
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+function textureSamplingParameters($) {
+    $("xml3d texture").each(function() {
+        var wrapAttribute, filterAttribute;
+        var texture = $(this);
+
+        if (texture.attr("wrap") || texture.attr("filter")) {
+            return;
+        }
+
+
+        var wrapS = texture.attr("wrapS") || "clamp";
+        var wrapT = texture.attr("wrapT") || "clamp";
+        if(wrapS == wrapT) {
+            wrapAttribute = wrapS;
+        } else {
+            wrapAttribute = wrapS + " " + wrapT;
+        }
+
+        var filterMin = texture.attr("filterMin") || "linear-mipmap-linear";
+        var filterMag = texture.attr("filterMag") || "linear";
+
+        if(filterMag == filterMin) {
+            filterAttribute = filterMin;
+        } else {
+            filterAttribute = filterMin + " " + filterMag;
+        }
+
+        ["wraps", "wrapt", "filtermin", "filtermag"].forEach(function(attr) {
+            texture.removeAttr(attr);
+        });
+
+        if (wrapAttribute != "clamp") { // default
+            texture.attr("wrap", wrapAttribute);
+        }
+        if (filterAttribute != "linear-mipmap-linear linear") { // default
+            texture.attr("filter", filterAttribute);
+        }
+    });
 }
 
 function perspective2Projection($) {
