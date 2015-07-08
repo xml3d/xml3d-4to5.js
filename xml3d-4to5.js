@@ -41,11 +41,25 @@ function convert(filename) {
 
             textureSamplingParameters(window.$);
 
+            visibleAttribute2cssProperty(window.$);
+
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+function visibleAttribute2cssProperty($) {
+    $("xml3d group,model,mesh,light").each(function() {
+        var visible = $(this).attr("visible");
+        if (visible != undefined) {
+            if(visible == "false") {
+               $(this).hide();
+            }
+            $(this).removeAttr("visible");
+        }
+    });
 }
 
 function textureSamplingParameters($) {
@@ -125,12 +139,10 @@ function newlightmodel($) {
             }
         }
         if(!shaderRef) {
-            console.warn("No shader given for light:");
             return;
         }
         var lightshader = $(shaderRef);
         if(!lightshader.length) {
-            console.warn("Light shader found for light:", shaderRef);
             return;
         }
 
