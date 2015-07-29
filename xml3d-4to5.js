@@ -43,11 +43,53 @@ function convert(filename) {
 
             visibleAttribute2cssProperty(window.$);
 
+            newViewLogic(window.$);
+
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+
+function newViewLogic($) {
+    $("xml3d view").each(function () {
+        var position = $(this).attr("position");
+        var css = [];
+        if (position) {
+            var split = position.split(" ");
+            position = [+split[0], +split[1], +split[2]]
+            css.push("translate3d(" + position.join("px, ") + "px)");
+            $(this).removeAttr("position");
+        }
+
+        var orientation = $(this).attr("orientation");
+        if (orientation) {
+            split = orientation.split(" ");
+            orientation = [+split[0], +split[1], +split[2], (+split[3] * 180 / Math.PI).toFixed(1)];
+            css.push("rotate3d(" + orientation.join(", ") + "deg)");
+            $(this).removeAttr("orientation");
+        }
+
+        if (css.length) {
+            $(this).attr("style", "transform: " + css.join(" "));
+        }
+
+        var fovv = $(this).attr("fieldofview");
+        if(fovv) {
+            $(this).removeAttr("fieldofview");
+            $(this).append($("<float name='fovVertical'>" + fovv + "</float>"))
+        }
+
+        var projection = $(this).attr("projection");
+        if(projection) {
+            $(this).attr("src", projection);
+            $(this).attr("model", "urn:xml3d:view:projective");
+            $(this).removeAttr("projection");
+        }
+
+    });
 }
 
 function visibleAttribute2cssProperty($) {
