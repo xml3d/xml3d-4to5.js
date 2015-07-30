@@ -33,6 +33,8 @@ function convert(filename) {
                 //process.exit(1);
             }
 
+            removeArtefacts(window.$);
+
             shader2material(window.$);
 
             newlightmodel(window.$);
@@ -50,6 +52,17 @@ function convert(filename) {
 
         }
     })
+}
+
+
+function removeArtefacts($) {
+    $("xml3d").each(function () {
+        // We are in HTML, no namespace required anymore
+        var xmlns = $(this).attr("xmlns");
+        if (xmlns == "http://www.xml3d.org/2009/xml3d") {
+            $(this).removeAttr("xmlns");
+        }
+    });
 }
 
 
@@ -90,6 +103,13 @@ function newViewLogic($) {
         }
 
     });
+     $("xml3d").each(function () {
+         var activeView = $(this).attr("activeview");
+         if(activeView != undefined) {
+             $(this).attr("view", activeView);
+         }
+         $(this).removeAttr("activeview");
+     });
 }
 
 function visibleAttribute2cssProperty($) {
