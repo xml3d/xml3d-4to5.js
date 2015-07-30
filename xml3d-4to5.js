@@ -259,6 +259,15 @@ function shader2material($) {
          rename_node($, this, "material");
     });
 
+    $("xml3d material").each(function(index) {
+        var script = $(this).attr("script");
+        if(script != undefined) {
+            $(this).attr("model", script);
+            $(this).removeAttr("script");
+        }
+
+    });
+
     // Renames material references (shader attributes)
     // Rename all references to shader, except for those in light elements
     $("xml3d :not(light)[shader]").each(function(index) {
