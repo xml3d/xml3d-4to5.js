@@ -47,6 +47,8 @@ function convert(filename) {
 
             newViewLogic(window.$);
 
+            falloffAngleToCutoffAngle(window.$);
+
             window.$(".jsdom").remove();
             save(window.document, filename);
 
@@ -65,6 +67,11 @@ function removeArtefacts($) {
     });
 }
 
+function falloffAngleToCutoffAngle($) {
+    $("xml3d float[name=falloffAngle]").each(function() {
+        $(this).attr("name", "cutoffAngle");
+    });
+}
 
 function newViewLogic($) {
     $("xml3d view").each(function () {
