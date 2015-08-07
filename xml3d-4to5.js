@@ -49,6 +49,8 @@ function convert(filename) {
 
             falloffAngleToCutoffAngle(window.$);
 
+            meshTransformToTransform(window.$);
+
             window.$(".jsdom").remove();
             save(window.document, filename);
 
@@ -56,6 +58,23 @@ function convert(filename) {
     })
 }
 
+function meshTransformToTransform($) {
+    $("xml3d float4x4[name=meshTransform]").each(function() {
+        var el = $(this);
+        var parentName = el.parent().prop("tagName");
+        if (parentName === "ASSETMESH" || parentName === "MESH") {
+            var am = el.parent();
+            var matString = el.text();
+            matString = matString.split(/\s+/).join(", ");
+            var styleString = am.attr("style") || "";
+            styleString = "transform: matrix3d("+matString+"); " + styleString;
+            am.attr("style", styleString);
+            el.remove();
+        } else {
+            console.warn("Could not automatically convert the 'meshTransform' with values "+el.text());
+        }
+    });
+}
 
 function removeArtefacts($) {
     $("xml3d").each(function () {
