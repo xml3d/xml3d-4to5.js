@@ -46,16 +46,33 @@ function convert(filename) {
             visibleAttribute2cssProperty(window.$);
 
             newViewLogic(window.$);
+            newViewLogic(window.$);
 
             falloffAngleToCutoffAngle(window.$);
 
             meshTransformToTransform(window.$);
+
+            transparencyToOpacity(window.$);
 
             window.$(".jsdom").remove();
             save(window.document, filename);
 
         }
     })
+}
+
+function transparencyToOpacity($) {
+    $("xml3d float[name=transparency]").each(function() {
+        var el = $(this);
+        el.attr("name", "opacity");
+        var val = +el.text();
+        val = 1.0 - val;
+        if (isNaN(val)) {
+            console.warn("Encountered NaN while converting from 'transparency' to 'opacity' in material #"+el.parent().attr('id'));
+        } else {
+            el.text(val);
+        }
+    });
 }
 
 function meshTransformToTransform($) {
