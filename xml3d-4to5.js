@@ -327,7 +327,7 @@ function shader2material($) {
 
 
 if (!argv._.length) {
-    console.print("Usage: iojs xml3d-4to5.js <html-file-to-convert>");
+    console.log("Usage: iojs xml3d-4to5.js <html-file-to-convert>");
     process.exit(1);
 } else {
     convert(argv._[0]);
