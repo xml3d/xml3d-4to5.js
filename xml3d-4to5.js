@@ -147,11 +147,12 @@ function newViewLogic($) {
 
     });
      $("xml3d").each(function () {
-         var activeView = $(this).attr("activeview");
+         var activeView = $(this).attr("activeview") || $(this).attr("activeView");
          if(activeView != undefined) {
              $(this).attr("view", activeView);
          }
          $(this).removeAttr("activeview");
+         $(this).removeAttr("activeView");
      });
 }
 
