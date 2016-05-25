@@ -6,7 +6,7 @@
     "url": "https://github.com/xml3d/xml3d-4to5.js"
   },
   "dependencies": {
-    "jsdom": ">=5.1.0",
+    "jsdom": "5.1.0",
     "minimist": ">=1.1.1"
   }
 }
